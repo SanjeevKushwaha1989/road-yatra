@@ -16,7 +16,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { CallIcon, WhatsAppIcon } from "@/components/BrandIcons";
-import Icon3D from "@/components/Icon3D";
+import FeatureIcon from "@/components/FeatureIcon";
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { fmtDuration, inr, VEHICLE_TYPES } from "@/lib/format";
@@ -239,13 +239,11 @@ export default async function Home() {
               ["driver", "Professional Drivers"],
               ["wrench", "Well Maintained Vehicles"],
               ["globe", "All India Service"],
-              ["smile", "Comfortable Ride"],
+              ["comfort", "Comfortable Ride"],
             ] as const
           ).map(([icon, title]) => (
             <li key={title} className="flex items-center gap-3 rounded-2xl bg-white p-3.5 ring-1 ring-slate-200/70 transition hover:-translate-y-0.5 hover:shadow-md lg:flex-col lg:p-4 lg:text-center">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-light/60">
-                <Icon3D name={icon} className="h-8 w-8" />
-              </span>
+              <FeatureIcon name={icon} className="h-12 w-12" />
               <p className="text-sm leading-tight font-bold text-ink">{title}</p>
             </li>
           ))}
@@ -369,9 +367,7 @@ export default async function Home() {
               ] as const
             ).map(([icon, title, text]) => (
               <div key={title} className="flex gap-4 rounded-2xl bg-white/[0.06] p-5 ring-1 ring-white/10 transition hover:bg-white/[0.1]">
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white shadow-lg shadow-black/20">
-                  <Icon3D name={icon} className="h-9 w-9" />
-                </span>
+                <FeatureIcon name={icon} tone="accent" className="h-12 w-12" />
                 <div>
                   <h3 className="font-bold">{title}</h3>
                   <p className="mt-1 text-sm text-slate-300">{text}</p>
@@ -436,12 +432,12 @@ export default async function Home() {
               [
                 ["search", "Search your trip", "Pick your cities and date. Choose a shared seat on a daily departure, or a full cab at your own time."],
                 ["card", "Choose & pay", `Select your seats and pickup point, or your car. Pay online by UPI or card${settings.allowCash ? ", or cash to the driver" : ""}.`],
-                ["phone", "Board & track", "Show the QR code or OTP to the driver. Track the vehicle live and share the trip with family."],
+                ["qr", "Board & track", "Show the QR code or OTP to the driver. Track the vehicle live and share the trip with family."],
               ] as const
             ).map(([icon, title, text], i) => (
               <li key={title} className="relative rounded-2xl bg-canvas p-6 text-center ring-1 ring-slate-200/70">
-                <span className="relative mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-lg shadow-brand/15 ring-1 ring-slate-200">
-                  <Icon3D name={icon} className="h-10 w-10" />
+                <span className="relative mx-auto block h-16 w-16">
+                  <FeatureIcon name={icon} className="h-16 w-16" />
                   <span className="absolute -top-2 -right-2 grid h-6 w-6 place-items-center rounded-full bg-gold text-xs font-extrabold text-brand-darker ring-2 ring-white">{i + 1}</span>
                 </span>
                 <h3 className="mt-4 text-lg font-bold text-ink">{title}</h3>

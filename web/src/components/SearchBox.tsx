@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowLeftRight, LocateFixed, Search } from "lucide-react";
-import Icon3D, { type Icon3DName } from "./Icon3D";
+import FeatureIcon, { type FeatureIconName } from "./FeatureIcon";
 import { cityState } from "@/lib/media";
 import { currentPosition, nearest } from "@/lib/geo-client";
 
@@ -11,7 +11,7 @@ const todayIST = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/
 const tomorrowIST = () => new Date(Date.now() + 24 * 3600_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 const tomorrowAt9 = () => `${tomorrowIST()}T09:00`;
 
-const HIRE_TYPES: { id: string; label: string; icon: Icon3DName }[] = [
+const HIRE_TYPES: { id: string; label: string; icon: FeatureIconName }[] = [
   { id: "ONE_WAY", label: "One Way", icon: "road" },
   { id: "ROUND_TRIP", label: "Round Trip", icon: "repeat" },
   { id: "LOCAL", label: "Local (8 hr / 80 km)", icon: "stopwatch" },
@@ -126,7 +126,7 @@ export default function SearchBox({
   const cityField = (value: string, onChange: (v: string) => void, label: string, extra = "") => (
     <label className={`${field} ${extra}`}>
       <span className={fieldLabel}>
-        <Icon3D name="pin" className="h-4 w-4" /> {label}
+        <FeatureIcon name="pin" plain className="h-4 w-4" /> {label}
       </span>
       <span className="mt-0.5 truncate text-2xl leading-tight font-extrabold text-ink">{value || "Select city"}</span>
       <span className="truncate text-xs text-slate-500">{value ? cityState(value) : ""}</span>
@@ -141,7 +141,7 @@ export default function SearchBox({
   const dateField = (label: string, parts: { big: string; small: string }, input: React.ReactNode) => (
     <label className={field}>
       <span className={fieldLabel}>
-        <Icon3D name="calendar" className="h-4 w-4" /> {label}
+        <FeatureIcon name="calendar" plain className="h-4 w-4" /> {label}
       </span>
       <span className="mt-0.5 truncate text-2xl leading-tight font-extrabold text-ink">{parts.big}</span>
       <span className="truncate text-xs text-slate-500">{parts.small}</span>
@@ -173,9 +173,7 @@ export default function SearchBox({
                   active ? "text-brand" : "text-slate-500 hover:text-ink"
                 }`}
               >
-                <span className={`grid h-10 w-10 place-items-center rounded-xl transition ${active ? "bg-brand-light ring-2 ring-brand/40" : "bg-slate-100 grayscale-[35%]"}`}>
-                  <Icon3D name={t.icon} className="h-7 w-7" />
-                </span>
+                <FeatureIcon name={t.icon} tone={active ? "brand" : "muted"} className="h-10 w-10 transition" />
                 <span>
                   <span className="block text-sm font-bold">{t.label}</span>
                   <span className="hidden text-[11px] font-medium text-slate-400 sm:block">{t.sub}</span>
@@ -203,7 +201,7 @@ export default function SearchBox({
                   }`}
                 >
                   <input type="radio" name="hireType" checked={active} onChange={() => setHireType(t.id)} className="sr-only" />
-                  <Icon3D name={t.icon} className="h-5 w-5" />
+                  <FeatureIcon name={t.icon} plain className="h-5 w-5" />
                   {t.label}
                 </label>
               );
