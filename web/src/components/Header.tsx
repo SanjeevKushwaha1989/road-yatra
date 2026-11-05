@@ -11,9 +11,9 @@ export default function Header() {
         <div className="container-x flex h-9 items-center justify-between gap-3">
           <p className="hidden truncate md:block">
             <span className="font-semibold text-white">Your Journey Our Priority</span>
-            <span className="mx-2 text-slate-500">|</span>
+            <span className="mx-2 text-slate-400" aria-hidden>|</span>
             Safe · Comfortable · Reliable
-            <span className="mx-2 text-slate-500">|</span>
+            <span className="mx-2 text-slate-400" aria-hidden>|</span>
             Service day &amp; night
           </p>
           {phone && (

@@ -17,12 +17,13 @@ import {
 } from "lucide-react";
 import { CallIcon, WhatsAppIcon } from "@/components/BrandIcons";
 import FeatureIcon from "@/components/FeatureIcon";
+import JsonLd, { textOf } from "@/components/JsonLd";
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { fmtDuration, inr, VEHICLE_TYPES } from "@/lib/format";
 import { getSettings } from "@/lib/settings";
 import { HOLD_MINUTES } from "@/lib/booking";
-import { cityPhoto, HERO_IMAGE, HILLS_IMAGE, ROADTRIP_IMAGE, routeHref, whatsappLink } from "@/lib/media";
+import { BRAND, cityPhoto, HERO_IMAGE, HILLS_IMAGE, ROADTRIP_IMAGE, routeHref, whatsappLink } from "@/lib/media";
 import SearchBox from "@/components/SearchBox";
 import SearchBoxFromUrl from "@/components/SearchBoxFromUrl";
 import VehicleImage from "@/components/VehicleImage";
@@ -166,8 +167,46 @@ export default async function Home() {
     },
   ];
 
+  // Structured data for Google: the business (name, contact, address, 24x7, places served) and the FAQ.
+  const site = (process.env.APP_URL || "https://jaishreeshyamtravels.com").replace(/\/+$/, "");
+  const business = {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "@id": `${site}/#business`,
+    name: brand,
+    alternateName: "JSS Travels",
+    slogan: "Your Journey Our Priority",
+    url: `${site}/`,
+    logo: `${site}${BRAND.logoMark}`,
+    image: [`${site}${HERO_IMAGE}`, `${site}${BRAND.logoMark}`],
+    ...(phone && { telephone: phone }),
+    ...(settings.business.email && { email: settings.business.email }),
+    address: { "@type": "PostalAddress", streetAddress: "17 Meel, Pachpeda", addressLocality: "Khatima", addressRegion: "Uttarakhand", postalCode: "262308", addressCountry: "IN" },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "00:00",
+      closes: "23:59",
+    },
+    areaServed: cities.map((c) => ({ "@type": "City", name: c })),
+    priceRange: "₹₹",
+    paymentAccepted: "Cash, UPI",
+    currenciesAccepted: "INR",
+    makesOffer: ["Daily shared taxi", "One-way taxi", "Round-trip taxi", "Airport taxi", "Hill station and pilgrimage trips"].map((name) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "Service", name, provider: { "@id": `${site}/#business` } },
+    })),
+  };
+  const faqPage = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: textOf(f.a).replace(/\s+/g, " ").trim() } })),
+  };
+
   return (
     <>
+      <JsonLd data={business} />
+      <JsonLd data={faqPage} />
       {/* ---------- Hero ---------- */}
       {/* Light hero: text on the left, an untinted photo on the right (laptop and up). Kept short so the booking box is visible without scrolling. */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-light via-[#f3f7ff] to-canvas">

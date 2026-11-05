@@ -1,0 +1,15 @@
+import { isValidElement, type ReactNode } from "react";
+
+/** Structured data (schema.org JSON-LD) for search engines. `<` is escaped so text can't close the script tag. */
+export default function JsonLd({ data }: { data: object }) {
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
+}
+
+/** Plain text of simple JSX (strings, numbers, nested elements), e.g. an FAQ answer for structured data. */
+export function textOf(node: ReactNode): string {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join("");
+  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children);
+  return "";
+}

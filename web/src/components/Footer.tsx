@@ -47,7 +47,7 @@ export default async function Footer() {
             Your Journey Our Priority. Daily shared taxi from Khatima to Delhi and Haridwar, one-way and round-trip cabs, and hill station trips. Safe · Comfortable · Reliable.
           </p>
           <div className="mt-6">
-            <p className="mb-2 text-xs font-semibold tracking-wider text-slate-500 uppercase">Mobile app</p>
+            <p className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase">Mobile app</p>
             <div className="inline-flex items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-slate-200">
               <Smartphone className="h-6 w-6 text-gold" aria-hidden />
               <div className="leading-tight">
@@ -96,7 +96,7 @@ export default async function Footer() {
                   <CallIcon className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                   <span>
                     {phone}
-                    <span className="block text-xs text-slate-500">Bookings · day &amp; night</span>
+                    <span className="block text-xs text-slate-400">Bookings · day &amp; night</span>
                   </span>
                 </a>
               </li>
@@ -137,7 +137,7 @@ export default async function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="container-x flex flex-col gap-2 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="container-x flex flex-col gap-2 py-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {business.legalName || brand}. All rights reserved. ·{" "}
             <a href="/credits" className="underline-offset-2 hover:text-white hover:underline">Photo credits</a>

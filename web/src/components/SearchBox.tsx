@@ -176,7 +176,7 @@ export default function SearchBox({
                 <FeatureIcon name={t.icon} tone={active ? "brand" : "muted"} className="h-10 w-10 transition" />
                 <span>
                   <span className="block text-sm font-bold">{t.label}</span>
-                  <span className="hidden text-[11px] font-medium text-slate-400 sm:block">{t.sub}</span>
+                  <span className="hidden text-[11px] font-medium text-slate-500 sm:block">{t.sub}</span>
                 </span>
                 {active && <span className="absolute inset-x-3 bottom-0 h-[3px] rounded-full bg-brand" />}
               </button>
@@ -265,7 +265,7 @@ export default function SearchBox({
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
           {tab === "seats" && (
             <>
-              <span className="text-slate-400">Quick pick:</span>
+              <span className="text-slate-500">Quick pick:</span>
               {[
                 [todayIST(), "Today"],
                 [tomorrowIST(), "Tomorrow"],
