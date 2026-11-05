@@ -2,6 +2,7 @@ import OurDrivers from "@/components/OurDrivers";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   CalendarCheck,
@@ -28,10 +29,11 @@ import SearchBox from "@/components/SearchBox";
 import SearchBoxFromUrl from "@/components/SearchBoxFromUrl";
 import VehicleImage from "@/components/VehicleImage";
 import Amenities from "@/components/Amenities";
-import { splitBrand } from "@/components/Logo";
 
 // Pre-built and served from the CDN; rebuilt at most every minute, and straight away when the office edits (tag "home").
 export const revalidate = 60;
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const FEATURED = ["Delhi", "Haridwar"];
 const HILL_STATIONS = ["Nainital", "Mussoorie", "Rishikesh", "Auli"];
@@ -64,7 +66,6 @@ export default async function Home() {
   const now = new Date();
   const [routes, vehicles, fares, settings, stops] = await homeData();
   const brand = process.env.NEXT_PUBLIC_BRAND_NAME || "Jai Shree Shyam Tour & Travels";
-  const [brandMain] = splitBrand(brand);
   const phone = process.env.NEXT_PUBLIC_SUPPORT_PHONE ?? "";
   const tel = phone.replace(/\s/g, "");
   const cities = [...new Set(routes.flatMap((r) => [r.fromCity, r.toCity]))].sort();
@@ -174,7 +175,9 @@ export default async function Home() {
     "@type": "TravelAgency",
     "@id": `${site}/#business`,
     name: brand,
-    alternateName: "JSS Travels",
+    alternateName: ["JSS Travels", "Jai Shree Shyam Travels", "Jai Shri Shyam Travels", "Jai Shree Shyam Tour and Travels", "Jai Shree Shyam Travels Khatima", "जय श्री श्याम टूर्स एंड ट्रैवल्स"],
+    description: "Taxi and cab service from Khatima: daily shared taxi to Delhi and Haridwar, one-way and round-trip cabs, hill station and pilgrimage trips.",
+    founder: { "@type": "Person", name: "Sanjeev Singh Kushwaha" },
     slogan: "Your Journey Our Priority",
     url: `${site}/`,
     logo: `${site}${BRAND.logoMark}`,
@@ -214,7 +217,7 @@ export default async function Home() {
         <div className="container-x grid items-center gap-8 pt-6 pb-24 sm:pt-8 lg:grid-cols-[1.1fr_0.9fr] lg:pt-10 lg:pb-28">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold text-brand shadow-sm ring-1 ring-brand/10">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden /> Shared seats · Full cabs · 24×7
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden /> Jai Shree Shyam Travels, Khatima · 24×7
             </p>
             <h1 className="mt-3 max-w-2xl text-[1.8rem] leading-[1.12] font-extrabold tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
               Khatima se Delhi – <span className="text-brand">Seat bhi book karein,</span> Puri Cab bhi.
@@ -537,10 +540,10 @@ export default async function Home() {
             <p className="deva text-lg font-bold text-accent">खाटू श्याम जी की कृपा से</p>
             <h2 className="section-title mt-2">About {brand}</h2>
             <p className="mt-4 leading-relaxed text-slate-600">
-              {brandMain} is a travel service from Khatima, Udham Singh Nagar, led by proprietor <b className="text-ink">Sanjeev Singh Kushwaha</b>. We run daily shared taxis to Delhi and
+              {brand} (also called Jai Shree Shyam Travels, Jai Shri Shyam Travels or JSS Travels) is a travel service from Khatima, Udham Singh Nagar, Uttarakhand, led by proprietor <b className="text-ink">Sanjeev Singh Kushwaha</b>. We run daily shared taxis to Delhi and
               Haridwar, one-way and round-trip cabs, and trips to Nainital, Mussoorie, Rishikesh, Auli and other destinations, with service day and night.
             </p>
-            <p className="deva mt-3 text-slate-500">जय श्री श्याम टूर्स एंड ट्रैवल्स</p>
+            <p className="deva mt-3 text-slate-500">जय श्री श्याम टूर्स एंड ट्रैवल्स, खटीमा · जय श्री श्याम ट्रेवल्स</p>
             <div className="mt-6 flex flex-wrap gap-3">
               {phone && (
                 <a href={`tel:${tel}`} className="btn-accent">

@@ -10,10 +10,25 @@ const brand = process.env.NEXT_PUBLIC_BRAND_NAME || "Jai Shree Shyam Tour & Trav
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 const deva = Noto_Sans_Devanagari({ subsets: ["devanagari"], weight: ["500", "700"], variable: "--font-deva", display: "swap", preload: false });
 
+const site = (process.env.APP_URL || "https://jaishreeshyamtravels.com").replace(/\/+$/, "");
+const description =
+  "Jai Shree Shyam Tour & Travels, Khatima (Jai Shri Shyam Travels): daily shared taxi Khatima to Delhi and Haridwar, one-way and round-trip cabs, and trips to Nainital, Mussoorie, Rishikesh and Auli. Service day and night.";
+
 export const metadata: Metadata = {
-  title: { default: `${brand} – Khatima to Delhi & Haridwar taxi, cab hire`, template: `%s | ${brand}` },
-  description:
-    "Your Journey Our Priority. Daily shared taxi Khatima to Delhi and Khatima to Haridwar, one-way and round-trip cabs, and hill station trips to Nainital, Mussoorie, Rishikesh and Auli. Service day and night.",
+  metadataBase: new URL(site),
+  title: { default: `${brand} Khatima – Taxi to Delhi & Haridwar, Cab Hire`, template: `%s | ${brand}` },
+  description,
+  applicationName: brand,
+  // Link previews on WhatsApp, Facebook and X.
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    siteName: brand,
+    title: `${brand} Khatima – Taxi to Delhi & Haridwar`,
+    description,
+    images: [{ url: "/images/hero-highway.webp", width: 1280, height: 720, alt: brand }],
+  },
+  twitter: { card: "summary_large_image" },
   // Google Search Console ownership (with public/google9fd1bdae2742977e.html). Keep both, even after verifying.
   verification: { google: "J7yQo2s54hjia192u8F0bo-UJahRa9Ri90zNC3Foj5I" },
 };
