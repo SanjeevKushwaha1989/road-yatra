@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   title: { default: `${brand} – Khatima to Delhi & Haridwar taxi, cab hire`, template: `%s | ${brand}` },
   description:
     "Your Journey Our Priority. Daily shared taxi Khatima to Delhi and Khatima to Haridwar, one-way and round-trip cabs, and hill station trips to Nainital, Mussoorie, Rishikesh and Auli. Service day and night.",
+  // Google Search Console ownership (with public/google9fd1bdae2742977e.html). Keep both, even after verifying.
+  verification: { google: "J7yQo2s54hjia192u8F0bo-UJahRa9Ri90zNC3Foj5I" },
 };
 
 export const viewport: Viewport = { themeColor: "#0f2a75" };
