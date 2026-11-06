@@ -11,6 +11,7 @@ import { Scanner } from '../../Scanner';
 import { SosButton } from '../../sos';
 import { UpiQrSheet, UpiRequest, useOfficeUpi } from '../../upi';
 import { LiveLocationRow } from '../../live';
+import { OnMyWay } from '../../onTheWay';
 import { colors, fonts, radius, space } from '../../theme';
 import {
   Badge,
@@ -421,6 +422,7 @@ export default function TripScreen() {
       </ScrollView>
 
       <BottomBar>
+        <OnMyWay duty={trip} />
         {trip.status === 'SCHEDULED' ? (
           <Button title="Start trip" icon="play" variant="success" onPress={start} loading={busy === 'trip'} />
         ) : trip.status === 'STARTED' ? (

@@ -1,4 +1,4 @@
-// Live location sharing while a duty is in progress.
+// Live location sharing while a duty is in progress, or the driver is on the way to one ("On my way to pickup").
 // - Foreground: Location.watchPositionAsync while the app is open.
 // - Background: an expo-task-manager task fed by Location.startLocationUpdatesAsync, with an
 //   Android foreground-service notification. It reads the token from SecureStore itself, because
@@ -77,7 +77,7 @@ function explainBackgroundLocation() {
   return new Promise<boolean>((resolve) =>
     Alert.alert(
       'Share location during trips',
-      'JSS Travels Driver collects your location while a trip is in progress — even when the app is closed or the screen is off — so passengers and the office can see where the vehicle is.\n\nLocation is only shared between "Start trip" and "End trip". On the next screen, choose "Allow all the time".',
+      'JSS Travels Driver collects your location while a trip is in progress — even when the app is closed or the screen is off — so passengers and the office can see where the vehicle is.\n\nLocation is only shared from "On my way to pickup" or "Start trip" until "End trip". On the next screen, choose "Allow all the time".',
       [
         { text: 'Not now', style: 'cancel', onPress: () => resolve(false) },
         { text: 'Continue', onPress: () => resolve(true) },

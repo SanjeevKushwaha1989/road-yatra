@@ -20,6 +20,8 @@ export type Track = {
   pickup: Point;
   drop: Point;
   onBoard: boolean;
+  /** Not started yet, but the driver is sharing on the way to the pickup. */
+  approaching?: boolean;
   location: { lat: number; lng: number; speed: number | null; updatedAt: string; stale: boolean } | null;
   eta: { minutes: number; km?: number; to: "pickup" | "drop"; place: string } | null;
 };
@@ -62,13 +64,15 @@ export default function TrackView({ bookingId, token, supportPhone }: { bookingI
       ? "This booking was cancelled."
       : data.tripStatus === "COMPLETED"
         ? "Trip completed. Thank you for travelling with us!"
-        : data.tripStatus === "STARTED"
+        : data.approaching
+          ? "Driver is on the way to your pickup point"
+          : data.tripStatus === "STARTED"
           ? data.onBoard
             ? "On the way to your destination"
             : "Vehicle is on the way to your pickup point"
-          : `Trip starts ${data.startAt ? fmtDateTime(data.startAt) : "soon"}. Live location appears once the driver starts the trip.`;
+          : `Trip starts ${data.startAt ? fmtDateTime(data.startAt) : "soon"}. Live location appears when the driver is on the way.`;
 
-  const live = data.tripStatus === "STARTED" && data.status !== "CANCELLED";
+  const live = (data.tripStatus === "STARTED" || !!data.approaching) && data.status !== "CANCELLED";
 
   return (
     <div className="space-y-4">

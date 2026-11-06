@@ -17,6 +17,9 @@ type DutiesState = {
   /** True when the list on screen is the copy saved on the phone (no network). */
   offline: boolean;
   sharing: boolean;
+  /** The duty the driver tapped "On my way to pickup" for: location is shared before the trip starts. */
+  headingTo: string | null;
+  setHeadingTo: (dutyId: string | null) => void;
   /** Actions saved while offline, waiting to be sent. */
   pending: QueuedAction[];
   refresh: () => Promise<void>;
@@ -26,7 +29,8 @@ const DutiesContext = createContext<DutiesState | null>(null);
 
 /**
  * Loads the driver's duties once for all screens, keeps them fresh (every minute while open, every ~15 min in
- * the background), keeps a copy for offline use, and runs location sharing while any duty is STARTED.
+ * the background), keeps a copy for offline use, and runs location sharing while any duty is STARTED or the driver
+ * is on the way to one.
  */
 export function DutiesProvider({ children }: { children: ReactNode }) {
   const { access } = useAuth();
@@ -37,6 +41,11 @@ export function DutiesProvider({ children }: { children: ReactNode }) {
   const [offline, setOffline] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [pending, setPending] = useState<QueuedAction[]>([]);
+  const [headingTo, setHeadingToState] = useState<string | null>(null);
+  const setHeadingTo = useCallback((id: string | null) => {
+    setHeadingToState(id);
+    save(KEYS.headingTo, id);
+  }, []);
   const isDriverRef = useRef(isDriver);
   isDriverRef.current = isDriver;
   const hasData = useRef(false);
@@ -86,6 +95,9 @@ export function DutiesProvider({ children }: { children: ReactNode }) {
     load<DutiesResponse | null>(KEYS.duties, null).then((cached) => {
       if (cached && isDriverRef.current) setData((cur) => cur ?? cached);
     });
+    load<string | null>(KEYS.headingTo, null).then((id) => {
+      if (isDriverRef.current) setHeadingToState((cur) => cur ?? id);
+    });
     ensureNotifications();
     startDutyChecks();
     refresh();
@@ -108,7 +120,14 @@ export function DutiesProvider({ children }: { children: ReactNode }) {
   useEffect(() => onSharingChange(setSharing), []);
   useEffect(() => onQueueChange(setPending), []);
 
-  const onTrip = isDriver && !!data?.duties.some((d) => d.status === 'STARTED');
+  // "On my way" ends when that duty starts (sharing carries on as a trip), ends, or leaves the list.
+  const headingDuty = headingTo ? data?.duties.find((d) => d.id === headingTo && d.status === 'SCHEDULED') : undefined;
+  useEffect(() => {
+    if (headingTo && data && !headingDuty) setHeadingTo(null);
+    if (headingTo && access !== null && !isDriver) setHeadingTo(null);
+  }, [headingTo, data, headingDuty, access, isDriver, setHeadingTo]);
+
+  const onTrip = isDriver && (!!headingDuty || !!data?.duties.some((d) => d.status === 'STARTED'));
   const loaded = !!data;
   useEffect(() => {
     if (onTrip)
@@ -120,8 +139,8 @@ export function DutiesProvider({ children }: { children: ReactNode }) {
   }, [onTrip, access, isDriver, loaded]);
 
   const value = useMemo(
-    () => ({ driver: data?.driver ?? null, duties: data?.duties ?? null, error, offline, sharing, pending, refresh }),
-    [data, error, offline, sharing, pending, refresh],
+    () => ({ driver: data?.driver ?? null, duties: data?.duties ?? null, error, offline, sharing, headingTo, setHeadingTo, pending, refresh }),
+    [data, error, offline, sharing, headingTo, setHeadingTo, pending, refresh],
   );
   return <DutiesContext.Provider value={value}>{children}</DutiesContext.Provider>;
 }

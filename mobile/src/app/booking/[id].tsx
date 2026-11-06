@@ -238,15 +238,27 @@ export default function BookingDetail() {
           </Notice>
         ) : null}
         {b.etaMinutes != null ? (
-          <View style={[st.card, st.eta]}>
+          // Refreshes with the booking every 30 s; tap for the live map.
+          <Pressable
+            style={({ pressed }) => [st.card, st.eta, pressed && trackUrl ? { opacity: 0.9 } : null]}
+            disabled={!trackUrl}
+            onPress={() => trackUrl && openPage(trackUrl)}
+            accessibilityRole={trackUrl ? 'button' : undefined}
+          >
             <Ionicons name="car-sport" size={22} color={colors.white} />
             <View style={{ flex: 1 }}>
-              <Text style={type('md', 'bold', colors.white)}>Vehicle is about {b.etaMinutes} min away</Text>
+              <Text style={type('md', 'bold', colors.white)}>Driver is about {b.etaMinutes} min away</Text>
               <Text style={type('xs', 'medium', 'rgba(255,255,255,0.85)')}>
                 {b.vehicleKm} km from {b.pickupStop?.name ?? 'your pickup point'} · please be ready
               </Text>
             </View>
-          </View>
+            {trackUrl ? (
+              <View style={st.etaMap}>
+                <Ionicons name="map" size={14} color={colors.white} />
+                <Text style={type('xs', 'bold', colors.white)}>Map</Text>
+              </View>
+            ) : null}
+          </Pressable>
         ) : null}
 
         <ShareLiveLocation bookingId={b.id} active={!!b.canShareLocation} />
@@ -985,6 +997,7 @@ const st = StyleSheet.create({
   dash: { height: 0, borderTopWidth: 1, borderColor: colors.border, borderStyle: 'dashed', marginVertical: spacing.sm },
   line: { height: 1, backgroundColor: colors.border, marginVertical: spacing.md },
   eta: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.success },
+  etaMap: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: 'rgba(255,255,255,0.22)' },
   hero: { borderWidth: 1.5, borderColor: colors.brandLight },
   heroPhoto: { width: 60, height: 60, borderRadius: 30 },
   plate: { flexDirection: 'row', alignItems: 'center', borderWidth: 2, borderColor: '#111827', borderRadius: 6, backgroundColor: '#FFFFFF', overflow: 'hidden' },

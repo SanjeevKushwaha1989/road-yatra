@@ -27,4 +27,5 @@ export const KEYS = {
   knownDuties: 'ry_known_duties', // duty ids the driver has already been told about
   queue: 'ry_offline_queue', // actions waiting for the network
   docsRemindedOn: 'ry_docs_reminded_on', // YYYY-MM-DD of the last document-expiry reminder
+  headingTo: 'ry_heading_to', // duty id after "On my way to pickup", until the trip starts
 } as const;

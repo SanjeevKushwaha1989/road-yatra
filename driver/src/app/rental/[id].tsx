@@ -10,6 +10,7 @@ import { RespondBar } from '../../respond';
 import { SosButton } from '../../sos';
 import { UpiQrSheet, useOfficeUpi } from '../../upi';
 import { LiveLocationRow } from '../../live';
+import { OnMyWay } from '../../onTheWay';
 import { colors, fonts, radius, space } from '../../theme';
 import {
   Avatar,
@@ -353,6 +354,7 @@ export default function RentalScreen() {
       </ScrollView>
 
       <BottomBar>
+        <OnMyWay duty={r} />
         {r.status === 'SCHEDULED' ? (
           <Button title="Start trip" icon="play" variant="success" onPress={() => open('start')} />
         ) : r.status === 'STARTED' ? (

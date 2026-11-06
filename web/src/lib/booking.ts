@@ -735,12 +735,39 @@ export function canShareLocation(b: FullBooking) {
   return t > -SHARE_LOCATION_HOURS * 3600_000 && t < SHARE_LOCATION_HOURS * 3600_000;
 }
 
-/** How far the vehicle is from the passenger's pickup point, while the trip is under way and they haven't boarded. */
+/** "On my way to pickup" in the driver app: location is accepted from this long before a duty starts. */
+export const ON_THE_WAY_MINUTES = 90;
+const ON_THE_WAY_LATE_MINUTES = 180; // ...and while the start is up to this late (driver hasn't tapped Start yet)
+
+/** Start times whose duty is in its "driver on the way" window now (a Prisma date filter). */
+export function onTheWayWindow() {
+  const now = Date.now();
+  return { gt: new Date(now - ON_THE_WAY_LATE_MINUTES * 60_000), lt: new Date(now + ON_THE_WAY_MINUTES * 60_000) };
+}
+
+export function inOnTheWayWindow(start: Date) {
+  const w = onTheWayWindow();
+  return start > w.gt && start < w.lt;
+}
+
+/**
+ * How far the vehicle is from the passenger's pickup until they board: while the trip is under way, or before
+ * the start once the booking's own driver is sharing location ("On my way"). Full-cab bookings use the exact pin.
+ */
 function vehicleEta(b: FullBooking) {
-  const loc = b.trip?.vehicle.location;
-  const stop = b.pickupStop;
-  const fresh = loc && Date.now() - loc.updatedAt.getTime() < 10 * 60_000;
-  if (b.trip?.status !== "STARTED" || b.boardedAt || !fresh || stop?.lat == null || stop.lng == null) return { vehicleKm: null, etaMinutes: null };
+  const loc = b.trip ? b.trip.vehicle.location : b.vehicle?.location;
+  const driverId = b.trip ? b.trip.driverId : b.driverId;
+  const start = b.kind === "SEAT" ? b.trip?.departAt : b.startAt;
+  const stop =
+    b.pickupLat != null && b.pickupLng != null
+      ? { lat: b.pickupLat, lng: b.pickupLng }
+      : b.pickupStop?.lat != null && b.pickupStop.lng != null
+        ? { lat: b.pickupStop.lat, lng: b.pickupStop.lng }
+        : null;
+  const fresh = !!loc && Date.now() - loc.updatedAt.getTime() < 10 * 60_000 && loc.driverId === driverId;
+  const coming =
+    b.trip?.status === "STARTED" || (!b.startedAt && (b.trip ? b.trip.status === "SCHEDULED" : !b.completedAt) && !!start && inOnTheWayWindow(start));
+  if (b.status !== "CONFIRMED" || !coming || b.boardedAt || b.startedAt || b.noShow || !loc || !fresh || !stop) return { vehicleKm: null, etaMinutes: null };
   const r = (d: number) => (d * Math.PI) / 180;
   const h = Math.sin(r(stop.lat - loc.lat) / 2) ** 2 + Math.cos(r(loc.lat)) * Math.cos(r(stop.lat)) * Math.sin(r(stop.lng - loc.lng) / 2) ** 2;
   const km = 12742 * Math.asin(Math.sqrt(h)) * 1.3; // roads are longer than a straight line

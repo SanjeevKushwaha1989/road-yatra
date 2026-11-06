@@ -2,7 +2,7 @@ import type { Vehicle } from "@prisma/client";
 import { db } from "./db";
 import { getRequestUser } from "./auth";
 import { HttpError } from "./http";
-import { assignInvoiceNo, cashDue, publicStop } from "./booking";
+import { assignInvoiceNo, cashDue, onTheWayWindow, publicStop } from "./booking";
 import { fmtDateTime } from "./format";
 import { notify, officePhone } from "./notify";
 
@@ -255,13 +255,20 @@ export async function endRental(driverId: string, bookingId: string, input: { ot
   return { kmDriven, includedKm: b.estimatedKm, amountDue: amountDue(b) };
 }
 
-/** Stores the latest GPS fix for the vehicle on the driver's trip that is in progress. */
+/**
+ * Stores the latest GPS fix for the vehicle on the driver's trip that is in progress, or else on the duty they are
+ * heading to ("On my way to pickup", from ON_THE_WAY_MINUTES before it starts).
+ */
 export async function updateLocation(driverId: string, p: { lat: number; lng: number; speed?: number; heading?: number }) {
-  const trip = await db.trip.findFirst({ where: { driverId, status: "STARTED" }, orderBy: { startedAt: "desc" } });
+  const soon = onTheWayWindow();
+  const trip =
+    (await db.trip.findFirst({ where: { driverId, status: "STARTED" }, orderBy: { startedAt: "desc" } })) ??
+    (await db.trip.findFirst({ where: { driverId, status: "SCHEDULED", departAt: soon }, orderBy: { departAt: "asc" } }));
   const rental = trip
     ? null
-    : await db.booking.findFirst({ where: { driverId, kind: "RENTAL", startedAt: { not: null }, completedAt: null }, orderBy: { startedAt: "desc" } });
-  if (!trip && !rental) throw new HttpError(409, "No trip in progress. Location is only shared during a trip.");
+    : ((await db.booking.findFirst({ where: { driverId, kind: "RENTAL", startedAt: { not: null }, completedAt: null }, orderBy: { startedAt: "desc" } })) ??
+      (await db.booking.findFirst({ where: { driverId, kind: "RENTAL", status: "CONFIRMED", startedAt: null, startAt: soon }, orderBy: { startAt: "asc" } })));
+  if (!trip && !rental) throw new HttpError(409, "No trip in progress or starting soon. Location is only shared for a trip.");
   const vehicleId = trip?.vehicleId ?? rental?.vehicleId;
   // A full-cab booking started before the office picked a vehicle: nowhere to store the fix yet, but the
   // trip is real, so keep the app sharing (a 409 here would switch sharing off for the whole trip).

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { bookingInclude, serializeBooking } from "./booking";
+import { bookingInclude, inOnTheWayWindow, serializeBooking } from "./booking";
 
 const AVG_SPEED_KMH = 45; // average intercity speed incl. stops, for a rough ETA
 const ROAD_FACTOR = 1.3; // roads are longer than a straight line
@@ -28,7 +28,11 @@ export async function getTrackingInfo(bookingId: string) {
   const vehicleId = b.trip?.vehicleId ?? b.vehicleId;
   const loc = vehicleId ? await db.vehicleLocation.findUnique({ where: { vehicleId } }) : null;
   const moving = s.tripStatus === "STARTED";
-  const location = moving && loc ? { lat: loc.lat, lng: loc.lng, speed: loc.speed, updatedAt: loc.updatedAt, stale: Date.now() - loc.updatedAt.getTime() > STALE_MINUTES * 60_000 } : null;
+  // Before the start: the booking's own driver is sharing on the way to the pickup ("On my way" in the driver app).
+  const fresh = !!loc && Date.now() - loc.updatedAt.getTime() <= STALE_MINUTES * 60_000;
+  const approaching =
+    s.tripStatus === "SCHEDULED" && b.status === "CONFIRMED" && !!s.startAt && inOnTheWayWindow(new Date(s.startAt)) && fresh && loc?.driverId === (b.trip ? b.trip.driverId : b.driverId);
+  const location = (moving || approaching) && loc ? { lat: loc.lat, lng: loc.lng, speed: loc.speed, updatedAt: loc.updatedAt, stale: Date.now() - loc.updatedAt.getTime() > STALE_MINUTES * 60_000 } : null;
 
   // Exact pin (full cab) first, then the pickup point, then any point in the pickup city.
   const pickup =
@@ -57,6 +61,7 @@ export async function getTrackingInfo(bookingId: string) {
     pickup,
     drop,
     onBoard,
+    approaching,
     location,
     eta: etaMins != null && roadKm != null && target ? { minutes: etaMins, km: Math.round(roadKm * 10) / 10, to: onBoard ? "drop" : "pickup", place: target.name } : null,
   };
