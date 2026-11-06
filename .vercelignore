@@ -1,5 +1,6 @@
-mobile
-driver
+# Leading slash: only the app folders at the repo root, not paths like web/src/app/api/driver
+/mobile
+/driver
 **/node_modules
 web/.next
 web/.next-preview
