@@ -28,6 +28,7 @@ export default async function Footer() {
     ["/?tab=hire#search", "Hire a full cab"],
     ["/my-bookings", "My trips"],
     ["/yatra", "Pilgrimage trips"],
+    ["/#drive-with-us", "Drive with us"],
     ["/feedback", "Feedback"],
     ["/#faq", "Help & FAQ"],
     ["/login", "Login / Sign up"],

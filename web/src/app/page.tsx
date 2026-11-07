@@ -1,4 +1,5 @@
 import OurDrivers from "@/components/OurDrivers";
+import DriveWithUs from "@/components/DriveWithUs";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -491,6 +492,8 @@ export default async function Home() {
       </section>
 
       <OurDrivers />
+
+      <DriveWithUs />
 
       {/* ---------- Why us ---------- */}
       <section className="section container-x">
