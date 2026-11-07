@@ -48,13 +48,18 @@ export default async function Footer() {
           </p>
           <div className="mt-6">
             <p className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase">Mobile app</p>
-            <div className="inline-flex items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-slate-200">
+            <a
+              href="https://play.google.com/store/apps/details?id=in.roadyatra.app"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-slate-200 transition hover:border-white/30 hover:bg-white/10"
+            >
               <Smartphone className="h-6 w-6 text-gold" aria-hidden />
               <div className="leading-tight">
-                <p className="text-[11px] text-slate-400">Android &amp; iOS</p>
-                <p className="font-semibold text-white">Coming soon</p>
+                <p className="text-[11px] text-slate-400">Get it on</p>
+                <p className="font-semibold text-white">Google Play</p>
               </div>
-            </div>
+            </a>
           </div>
         </div>
 
